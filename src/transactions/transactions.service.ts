@@ -19,6 +19,16 @@ export class TransactionsService {
         return this.repo.save(transaction);
     }
 
+    createBulk(transactionsDto: CreateTransactionDto[], user: User) {
+        const transactions = transactionsDto.map(dto => {
+            const transaction = this.repo.create(dto);
+            transaction.user = user;
+            return transaction;
+        });
+
+        return this.repo.save(transactions);
+    }
+
     getTransactions(query: GetTransactionDto) {
         const qb = this.repo.createQueryBuilder('t');
 
@@ -60,5 +70,9 @@ export class TransactionsService {
 
         report.approved = approved;
         return this.repo.save(report);
+    }
+
+    remove(ids: string | string[]) {
+        return this.repo.delete(ids);
     }
 }
