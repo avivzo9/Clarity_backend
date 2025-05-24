@@ -15,7 +15,7 @@ export class UsersService {
         return this.repo.save(user);
     }
 
-    findOne(id: number) {
+    findOne(id: string) {
         if (!id) return null;
 
         return this.repo.findOneBy({ id });
@@ -25,7 +25,7 @@ export class UsersService {
         return this.repo.find({ where: { email } });
     }
 
-    async update(id: number, attrs: Partial<User>) {
+    async update(id: string, attrs: Partial<User>) {
         const user = await this.findOne(id);
 
         if (!user) throw new NotFoundException('user not found');
@@ -34,7 +34,7 @@ export class UsersService {
         return this.repo.save(user);
     }
 
-    async remove(id: number) {
+    async remove(id: string) {
         const user = await this.findOne(id);
 
         if (!user) throw new NotFoundException('User not found');

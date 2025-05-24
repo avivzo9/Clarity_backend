@@ -48,7 +48,7 @@ export class UsersController {
     @Get(':id')
     @UseGuards(AuthGaurd)
     async getUserById(@Param('id') id: string) {
-        const user = await this.usersSrv.findOne(parseInt(id));
+        const user = await this.usersSrv.findOne(id);
 
         if (!user) throw new NotFoundException();
 
@@ -64,12 +64,12 @@ export class UsersController {
     @Patch(':id')
     @UseGuards(AuthGaurd)
     updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
-        return this.usersSrv.update(parseInt(id), body);
+        return this.usersSrv.update(id, body);
     }
 
     @Delete(':id')
     @UseGuards(AuthGaurd)
     removeUser(@Param('id') id: string) {
-        return this.usersSrv.remove(parseInt(id));
+        return this.usersSrv.remove(id);
     }
 }

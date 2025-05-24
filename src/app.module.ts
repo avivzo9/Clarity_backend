@@ -6,6 +6,7 @@ import { UsersModule } from './users/users.module';
 import { User } from './users/user.entity';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TransactionsModule } from './transactions/transactions.module';
+import { Transaction } from './transactions/transaction.entity';
 
 @Module({
   imports: [
@@ -18,7 +19,7 @@ import { TransactionsModule } from './transactions/transactions.module';
       useFactory: (config: ConfigService) => ({
         type: 'sqlite',
         database: config.get<string>('DB_NAME'),
-        entities: [User],
+        entities: [User, Transaction],
         synchronize: true
       })
     }),
