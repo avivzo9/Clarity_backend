@@ -1,4 +1,4 @@
-import { Body, Controller, Param, Patch, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
 import { AuthGaurd } from 'src/guards/auth.guard';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dtos/create-transaction.dto';
@@ -8,11 +8,17 @@ import { UseSerialize } from 'src/interceptors/serialize.interceptor';
 import { TransactionDto } from './dtos/transaction.dto';
 import { ApproveTransactionDto } from './dtos/approve-transaction.dto';
 import { AdminGuard } from 'src/guards/admin.guard';
+import { GetTransactionDto } from './dtos/get-transaction.dto';
 
 @Controller('transaction')
 export class TransactionsController {
 
     constructor(private transactionsSrv: TransactionsService) { }
+
+    @Get()
+    getTransactions(@Query() query: GetTransactionDto) {
+        return this.transactionsSrv.getTransactions(query);
+    }
 
     @Post()
     @UseGuards(AuthGaurd)

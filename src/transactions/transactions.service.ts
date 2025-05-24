@@ -4,6 +4,7 @@ import { Repository } from 'typeorm';
 import { CreateTransactionDto } from './dtos/create-transaction.dto';
 import { Transaction } from './transaction.entity';
 import { User } from 'src/users/user.entity';
+import { GetTransactionDto } from './dtos/get-transaction.dto';
 
 @Injectable()
 export class TransactionsService {
@@ -14,9 +15,42 @@ export class TransactionsService {
         const transaction = this.repo.create(transactionDto);
 
         transaction.user = user;
-        transaction.createdAt = new Date();
 
         return this.repo.save(transaction);
+    }
+
+    getTransactions(query: GetTransactionDto) {
+        const qb = this.repo.createQueryBuilder('t');
+
+        if (query.category) {
+            qb.andWhere('category = :category', { category: query.category });
+        }
+        if (query.transactionDate) {
+            qb.andWhere('transactionDate = :transactionDate', { transactionDate: query.transactionDate });
+        }
+        if (query.description) {
+            qb.andWhere('description = :description', { description: query.description });
+        }
+        if (query.transactionAmount) {
+            qb.andWhere('transactionAmount = :transactionAmount', { transactionAmount: query.transactionAmount });
+        }
+        if (query.billingAmount) {
+            qb.andWhere('billingAmount = :billingAmount', { billingAmount: query.billingAmount });
+        }
+        if (query.notes) {
+            qb.andWhere('notes = :notes', { notes: query.notes });
+        }
+        if (query.isCash !== undefined) {
+            qb.andWhere('isCash = :isCash', { isCash: query.isCash });
+        }
+        if (query.isExternal !== undefined) {
+            qb.andWhere('isExternal = :isExternal', { isExternal: query.isExternal });
+        }
+
+        return qb
+            .andWhere('approved = true')
+            .orderBy('transactionDate', 'DESC')
+            .getRawMany();
     }
 
     async changeApproval(id: string, approved: boolean) {

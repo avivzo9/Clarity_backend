@@ -7,7 +7,7 @@ export class Transaction {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column({ default: false })
+    @Column({ default: true })
     approved: boolean;
 
     @Column()
@@ -25,7 +25,7 @@ export class Transaction {
     @Column("decimal")
     billingAmount: number;
 
-    @Column()
+    @Column({ default: () => "CURRENT_TIMESTAMP" })
     createdAt: Date;
 
     @Column({ nullable: true })
