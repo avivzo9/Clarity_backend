@@ -1,4 +1,4 @@
-import { IsBoolean, IsDate, IsDateString, IsNumber, IsOptional, IsString } from "class-validator";
+import { IsBoolean, IsDateString, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class CreateTransactionDto {
     @IsDateString()

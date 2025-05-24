@@ -1,10 +1,14 @@
 import { IsOptional } from "class-validator";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { User } from "src/users/user.entity";
+import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Transaction {
     @PrimaryGeneratedColumn("uuid")
     id: string;
+
+    @Column({ default: false })
+    approved: boolean;
 
     @Column()
     transactionDate: Date;
@@ -21,6 +25,9 @@ export class Transaction {
     @Column("decimal")
     billingAmount: number;
 
+    @Column()
+    createdAt: Date;
+
     @Column({ nullable: true })
     @IsOptional()
     notes: string;
@@ -32,4 +39,7 @@ export class Transaction {
     @Column({ default: false })
     @IsOptional()
     isExternal: boolean;
+
+    @ManyToOne(() => User, u => u.transactions)
+    user: User;
 }

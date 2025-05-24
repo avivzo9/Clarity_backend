@@ -15,7 +15,6 @@ export class SerializeInterceptor implements NestInterceptor {
     intercept(context: ExecutionContext, next: CallHandler<any>): Observable<any> {
         // Run before a req is handled
 
-
         return next.handle().pipe(
             map(data => {
                 // Run before a res is sent
