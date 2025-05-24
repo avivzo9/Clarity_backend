@@ -11,6 +11,7 @@ export class CreateTransactionDto {
     category: string;
 
     @IsNumber()
+    @IsOptional()
     transactionAmount: number;
 
     @IsNumber()

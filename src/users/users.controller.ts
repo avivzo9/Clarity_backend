@@ -36,6 +36,8 @@ export class UsersController {
     @Get('/currentuser')
     @UseGuards(AuthGaurd)
     currentUser(@CurrentUser() user: User) {
+        if (!user) throw new NotFoundException('User not found');
+
         return user;
     }
 

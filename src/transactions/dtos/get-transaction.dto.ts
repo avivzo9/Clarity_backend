@@ -2,39 +2,39 @@ import { Transform } from "class-transformer";
 import { IsBoolean, IsDateString, IsNumber, IsOptional, IsString } from "class-validator";
 
 export class GetTransactionDto {
-    @IsOptional()
     @IsDateString()
+    @IsOptional()
     transactionDate: Date;
 
-    @IsOptional()
     @IsString()
+    @IsOptional()
     description: string;
 
-    @IsOptional()
     @IsString()
+    @IsOptional()
     category: string;
 
-    @IsOptional()
     @Transform(({ value }) => parseFloat(value))
     @IsNumber()
+    @IsOptional()
     transactionAmount: number;
 
-    @IsOptional()
     @Transform(({ value }) => parseFloat(value))
     @IsNumber()
+    @IsOptional()
     billingAmount: number;
 
-    @IsOptional()
     @IsString()
+    @IsOptional()
     notes: string;
 
-    @IsOptional()
     @Transform(({ value }) => value === 'true')
     @IsBoolean()
+    @IsOptional()
     isCash: boolean;
 
-    @IsOptional()
     @Transform(({ value }) => value === 'true')
     @IsBoolean()
+    @IsOptional()
     isExternal: boolean;
 }

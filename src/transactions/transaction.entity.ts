@@ -1,6 +1,5 @@
-import { IsOptional } from "class-validator";
 import { User } from "src/users/user.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { AfterInsert, AfterRemove, AfterUpdate, Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 
 @Entity()
 export class Transaction {
@@ -19,7 +18,7 @@ export class Transaction {
     @Column()
     category: string;
 
-    @Column("decimal")
+    @Column("decimal", { nullable: true })
     transactionAmount: number;
 
     @Column("decimal")
@@ -29,17 +28,29 @@ export class Transaction {
     createdAt: Date;
 
     @Column({ nullable: true })
-    @IsOptional()
     notes: string;
 
     @Column({ default: false })
-    @IsOptional()
     isCash: boolean;
 
     @Column({ default: false })
-    @IsOptional()
     isExternal: boolean;
 
     @ManyToOne(() => User, u => u.transactions)
     user: User;
+
+    @AfterInsert()
+    logInsert() {
+        console.log('Inserted transaction:', this.id);
+    }
+
+    @AfterUpdate()
+    logUpdate() {
+        console.log('Updated transaction:', this.id)
+    }
+
+    @AfterRemove()
+    logRemove() {
+        console.log('Removed transaction:', this.id);
+    }
 }
