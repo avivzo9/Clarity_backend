@@ -46,6 +46,7 @@ export class UsersController {
     }
 
     @Get(':id')
+    @UseGuards(AuthGaurd)
     async getUserById(@Param('id') id: string) {
         const user = await this.usersSrv.findOne(parseInt(id));
 
@@ -55,16 +56,19 @@ export class UsersController {
     }
 
     @Get()
+    @UseGuards(AuthGaurd)
     getAllUsers(@Query('email') email: string) {
         return this.usersSrv.find(email);
     }
 
     @Patch(':id')
+    @UseGuards(AuthGaurd)
     updateUser(@Param('id') id: string, @Body() body: UpdateUserDto) {
         return this.usersSrv.update(parseInt(id), body);
     }
 
     @Delete(':id')
+    @UseGuards(AuthGaurd)
     removeUser(@Param('id') id: string) {
         return this.usersSrv.remove(parseInt(id));
     }
