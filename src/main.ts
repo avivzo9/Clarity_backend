@@ -11,6 +11,8 @@ async function bootstrap() {
     keys: ['asdf']
   }));
 
+  app.enableCors();
+
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true
