@@ -1,3 +1,4 @@
+import { Category } from "src/categories/category.entity";
 import { Transaction } from "src/transactions/transaction.entity";
 import { AfterInsert, AfterRemove, AfterUpdate, Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
 
@@ -15,11 +16,14 @@ export class User {
     @Column()
     password: string;
 
-    @Column({ default: true })
+    @Column({ default: false })
     isAdmin: boolean;
 
     @OneToMany(() => Transaction, t => t.user)
     transactions: Transaction[];
+
+    @OneToMany(() => Category, c => c.user)
+    categories: Category[];
 
     @AfterInsert()
     logInsert() {

@@ -11,16 +11,16 @@ export class TransactionsService {
 
     constructor(@InjectRepository(Transaction) private repo: Repository<Transaction>) { }
 
-    create(transactionDto: CreateTransactionDto, user: User) {
-        const transaction = this.repo.create(transactionDto);
+    create(dto: CreateTransactionDto, user: User) {
+        const transaction = this.repo.create(dto);
 
         transaction.user = user;
 
         return this.repo.save(transaction);
     }
 
-    createBulk(transactionsDto: CreateTransactionDto[], user: User) {
-        const transactions = transactionsDto.map(dto => {
+    createBulk(dto: CreateTransactionDto[], user: User) {
+        const transactions = dto.map(dto => {
             const transaction = this.repo.create(dto);
             transaction.user = user;
             return transaction;
@@ -29,7 +29,7 @@ export class TransactionsService {
         return this.repo.save(transactions);
     }
 
-    getTransactions(query: GetTransactionDto) {
+    getTransactions(query: GetTransactionDto, user: User) {
         const qb = this.repo.createQueryBuilder('t');
 
         if (query.category) {
@@ -58,8 +58,10 @@ export class TransactionsService {
         }
 
         return qb
+            .innerJoin('t.user', 'user')
             .andWhere('approved = true')
             .orderBy('transactionDate', 'DESC')
+            .andWhere('user.id = :userId', { userId: user.id })
             .getMany();
     }
 

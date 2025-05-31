@@ -1,5 +1,5 @@
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, UseGuards } from '@nestjs/common';
-import { AuthGaurd } from 'src/guards/auth.guard';
+import { AuthGuard } from 'src/guards/auth.guard';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto } from './dtos/create-transaction.dto';
 import { CurrentUser } from 'src/users/decorators/current-user.decorator';
@@ -11,14 +11,14 @@ import { AdminGuard } from 'src/guards/admin.guard';
 import { GetTransactionDto } from './dtos/get-transaction.dto';
 
 @Controller('transaction')
-@UseGuards(AuthGaurd)
+@UseGuards(AuthGuard)
 export class TransactionsController {
 
     constructor(private transactionsSrv: TransactionsService) { }
 
     @Get()
-    getTransactions(@Query() query: GetTransactionDto) {
-        return this.transactionsSrv.getTransactions(query);
+    getTransactions(@Query() query: GetTransactionDto, @CurrentUser() user: User) {
+        return this.transactionsSrv.getTransactions(query, user);
     }
 
     @Post()

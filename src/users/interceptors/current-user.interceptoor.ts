@@ -1,4 +1,4 @@
-import { CallHandler, ExecutionContext, Injectable, NestInterceptor, UseInterceptors } from "@nestjs/common";
+import { CallHandler, ExecutionContext, Injectable, NestInterceptor, NotFoundException, UseInterceptors } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { UsersService } from "../users.service";
 
@@ -16,7 +16,7 @@ export class CurrentUserInterceptor implements NestInterceptor {
         if (userId) {
             const user = await this.usersSrv.findOne(userId);
             req.currentUser = user;
-        }
+        } else throw new NotFoundException('User not found');
 
         return next.handle();
     }
