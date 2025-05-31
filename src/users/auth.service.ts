@@ -12,7 +12,7 @@ export class AuthService {
     async signup(data: CreateUserDto) {
         const users = await this.usersSrv.find(data.email);
 
-        if (users.length) throw new BadRequestException('email in use');
+        if (users.length) throw new BadRequestException('Email in use');
 
         data.password = await Password.toHash(data.password);
 
@@ -22,11 +22,11 @@ export class AuthService {
     async signin(data: Signin) {
         const [user] = await this.usersSrv.find(data.email);
 
-        if (!user) throw new NotFoundException('user not found');
+        if (!user) throw new NotFoundException('User not found');
 
         const res = await Password.compare(user.password, data.password);
 
-        if (!res) throw new BadRequestException('user not found')
+        if (!res) throw new BadRequestException('User not found')
 
         return user;
     }

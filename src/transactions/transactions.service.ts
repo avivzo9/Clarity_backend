@@ -60,7 +60,7 @@ export class TransactionsService {
         return qb
             .andWhere('approved = true')
             .orderBy('transactionDate', 'DESC')
-            .getRawMany();
+            .getMany();
     }
 
     async changeApproval(id: string, approved: boolean) {

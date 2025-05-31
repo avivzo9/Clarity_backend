@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Query, Session, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, Session, UseGuards } from '@nestjs/common';
 import { CreateUserDto } from './dtos/create-user.dto';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dtos/update-user.dto';
@@ -17,13 +17,16 @@ export class UsersController {
     constructor(private usersSrv: UsersService, private authSrv: AuthService) { }
 
     @Post('/signup')
+    @HttpCode(HttpStatus.CREATED)
     async createUser(@Body() body: CreateUserDto, @Session() session: any) {
         const user = await this.authSrv.signup(body);
+
         session.userId = user.id;
         return user;
     }
 
     @Post('/signin')
+    @HttpCode(HttpStatus.OK)
     async signin(@Body() body: Signin, @Session() session: any) {
         const user = await this.authSrv.signin(body);
 
@@ -35,6 +38,7 @@ export class UsersController {
 
     @Get('/currentuser')
     @UseGuards(AuthGaurd)
+    @HttpCode(HttpStatus.OK)
     currentUser(@CurrentUser() user: User) {
         if (!user) throw new NotFoundException('User not found');
 
@@ -42,6 +46,7 @@ export class UsersController {
     }
 
     @Post('/signout')
+    @HttpCode(HttpStatus.OK)
     signout(@Session() session: any) {
         session.userId = null;
         return true;
