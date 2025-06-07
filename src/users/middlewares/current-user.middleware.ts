@@ -3,11 +3,12 @@ import { UsersService } from "../users.service";
 import { Injectable, NestMiddleware } from "@nestjs/common";
 import { User } from "../user.entity";
 
-declare global {
-    namespace Express {
-        interface Request {
-            currentUser?: User; // Adjust the type as per your user model
-        }
+declare module 'express' {
+    interface Request {
+        currentUser?: User;
+        session?: {
+            userId?: string;
+        };
     }
 }
 
