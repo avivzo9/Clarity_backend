@@ -1,36 +1,35 @@
-import { Body, Controller } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import { MessagePattern, Payload } from '@nestjs/microservices';
 import { TransactionsService } from './transactions.service';
-import { CreateTransactionDto } from '../../../../libs/contracts/src/transactions/dtos/create-transaction.dto';
-import { UseCurrentUser } from '@app/contracts/users/interceptors/current-user.interceptoor';
-import { User } from '@app/contracts/users/user.entity';
+import { CreateTransactionDto } from '@app/contracts/transactions/dtos/create-transaction.dto';
+import { Transaction } from '@app/contracts/transactions/transaction.entity';
 
 @Controller()
 export class TransactionsController {
   constructor(private readonly transactionsService: TransactionsService) { }
 
-  @MessagePattern('createTransaction')
-  createTransaction(@Body() body: CreateTransactionDto, @UseCurrentUser() user: User) {
-    return this.transactionsSrv.create(body, user);
+  @MessagePattern('get_transaction')
+  async getTransaction(@Payload() data: { id: string }) {
+    return this.transactionsService.findOne(data.id);
   }
 
-  @MessagePattern('findAllTransactions')
-  findAll() {
-    return this.transactionsService.findAll();
+  @MessagePattern('create_transaction')
+  async createTransaction(@Payload() data: CreateTransactionDto) {
+    return this.transactionsService.create(data);
   }
 
-  @MessagePattern('findOneTransaction')
-  findOne(@Payload() id: number) {
-    return this.transactionsService.findOne(id);
+  @MessagePattern('update_transaction')
+  async updateTransaction(@Payload() data: { id: string; updateData: Partial<Transaction> }) {
+    return this.transactionsService.update(data.id, data.updateData);
   }
 
-  @MessagePattern('updateTransaction')
-  update(@Payload() updateTransactionDto: UpdateTransactionDto) {
-    return this.transactionsService.update(updateTransactionDto.id, updateTransactionDto);
+  @MessagePattern('delete_transaction')
+  async deleteTransaction(@Payload() data: { id: string }) {
+    return this.transactionsService.remove(data.id);
   }
 
-  @MessagePattern('removeTransaction')
-  remove(@Payload() id: number) {
-    return this.transactionsService.remove(id);
+  @MessagePattern('get_user_transactions')
+  async getUserTransactions(@Payload() data: { userId: string }) {
+    return this.transactionsService.findByUserId(data.userId);
   }
 }

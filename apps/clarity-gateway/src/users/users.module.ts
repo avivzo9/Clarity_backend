@@ -1,22 +1,14 @@
 import { Module } from '@nestjs/common';
-import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { UsersService } from './users.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { User } from '@app/contracts/users/user.entity';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'USERS_CLIENT',
-        transport: Transport.TCP,
-        options: {
-          host: process.env.USERS_HOST || 'users',
-          port: 3001,
-        }
-      }
-    ]),
+    TypeOrmModule.forFeature([User])
   ],
-  providers: [UsersService],
-  controllers: [UsersController]
+  controllers: [UsersController],
+  providers: [UsersService]
 })
 export class UsersModule { }

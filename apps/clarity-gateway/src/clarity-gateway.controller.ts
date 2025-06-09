@@ -1,12 +1,15 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Post, Body } from '@nestjs/common';
 import { ClarityGatewayService } from './clarity-gateway.service';
+import { CreateUserDto } from '@app/contracts/users/dtos/create-user.dto';
 
-@Controller()
+@Controller('auth')
 export class ClarityGatewayController {
-  constructor(private readonly clarityGatewayService: ClarityGatewayService) {}
+  constructor(
+    private readonly clarityGatewayService: ClarityGatewayService,
+  ) { }
 
-  @Get()
-  getHello(): string {
-    return this.clarityGatewayService.getHello();
+  @Post('signup')
+  async signup(@Body() createUserDto: CreateUserDto) {
+    return this.clarityGatewayService.signup(createUserDto);
   }
 }

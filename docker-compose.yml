@@ -1,8 +1,49 @@
 version: '3'
 services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:latest
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - "2181:2181"
+    healthcheck:
+      test: [ "CMD-SHELL", "echo srvr | nc localhost 2181 || exit 1" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    depends_on:
+      zookeeper:
+        condition: service_healthy
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://host.docker.internal:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      # TODO: replace with false
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+    healthcheck:
+      test: [ "CMD-SHELL", "kafka-topics --bootstrap-server kafka:29092 --list || exit 1" ]
+      interval: 30s
+      timeout: 20s
+      retries: 10
+      start_period: 40s
+
   users:
     build: .
-    command: npm start users
+    command: sh -c "sleep 30 && npm start users"
     ports:
       - "3001:3001"
     environment:
@@ -10,54 +51,54 @@ services:
     volumes:
       - ./apps/users/src:/app/src
       - ./package.json:/app/package.json
+    depends_on:
+      kafka:
+        condition: service_healthy
+
+  # transactions:
+  #   build: .
+  #   command: sh -c "sleep 10 && npm start transactions"
+  #   ports:
+  #     - "3002:3002"
+  #   environment:
+  #     - NODE_ENV=development
+  #   volumes:
+  #     - ./apps/transactions/src:/app/src
+  #     - ./package.json:/app/package.json
+  #   depends_on:
+  #     kafka:
+  #       condition: service_healthy
+
+  # categories:
+  #   build: .
+  #   command: sh -c "sleep 10 && npm start categories"
+  #   ports:
+  #     - "3003:3003"
+  #   environment:
+  #     - NODE_ENV=development
+  #   volumes:
+  #     - ./apps/categories/src:/app/src
+  #     - ./package.json:/app/package.json
+  #   depends_on:
+  #     kafka:
+  #       condition: service_healthy
 
   gateway:
     build: .
-    command: npm start clarity-gateway
+    command: sh -c "sleep 30 && npm start clarity-gateway"
     ports:
       - "3000:3000"
     depends_on:
-      - users
+      users:
+        condition: service_started
+      # transactions:
+      #   condition: service_started
+      # categories:
+      #   condition: service_started
+      kafka:
+        condition: service_healthy
     environment:
       - NODE_ENV=development
     volumes:
       - ./apps/clarity-gateway/src:/app/src
       - ./package.json:/app/package.json
-      
-# version: '3'
-# services:
-#   app:
-#     build: .
-#     ports:
-#       - "3000:3000"
-#     command: npm start clarity-gateway
-#     environment:
-#       - NODE_ENV=development
-#     develop:
-#       watch:
-#         - action: sync
-#           path: ./apps/clarity-gateway/src
-#           target: /app/src
-#         - action: sync
-#           path: ./package.json
-#           target: /app/package.json
-#         - action: rebuild
-#           path: ./package.json
-
-# version: '3'
-# services:
-#   app:
-#     build: .
-#     ports:
-#       - "3000:3000"
-#     command: npm run start:dev
-#     develop:
-#       watch:
-#         - action: sync
-#           path: ./src
-#           target: /app/src
-#         - action: sync
-#           path: ./package.json
-#           target: /app/package.json
-#         - action: rebuild
-#           path: ./package.json

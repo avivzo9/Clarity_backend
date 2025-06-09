@@ -1,15 +1,20 @@
 import { NestFactory } from '@nestjs/core';
-import { Transport, MicroserviceOptions } from '@nestjs/microservices';
-import { TransactionsModule } from './transactions-app.module';
+import { MicroserviceOptions, Transport } from '@nestjs/microservices';
+import { TransactionsModule } from './transactions/transactions.module';
 
 async function bootstrap() {
   const app = await NestFactory.createMicroservice<MicroserviceOptions>(
     TransactionsModule,
     {
-      transport: Transport.TCP,
+      transport: Transport.KAFKA,
       options: {
-        host: '0.0.0.0',
-        port: 3002,
+        client: {
+          clientId: 'transactions',
+          brokers: ['kafka:29092'],
+        },
+        consumer: {
+          groupId: 'transactions-consumer',
+        },
       },
     },
   );
